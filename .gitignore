@@ -6,3 +6,5 @@ key.json
 googleads.yaml
 *.pyc
 local_settings.py
+*.p12
+*.pem
