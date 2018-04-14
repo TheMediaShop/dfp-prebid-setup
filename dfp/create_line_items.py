@@ -76,7 +76,7 @@ def create_line_item_config(name, order_id, placement_ids, cpm_micro_amount,
   top_set = {
     'xsi_type': 'CustomCriteriaSet',
     'logicalOperator': 'AND',
-    'children': [hb_bidder_criteria, hb_pb_criteria]
+    'children': [hb_pb_criteria]
   }
 
   # https://developers.google.com/doubleclick-publishers/docs/reference/v201802/LineItemService.LineItem
