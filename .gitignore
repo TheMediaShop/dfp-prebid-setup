@@ -4,6 +4,7 @@ key.p12
 key.pem
 key.json
 googleads.yaml
+secret-files.tar
 *.pyc
 local_settings.py
 *.p12
