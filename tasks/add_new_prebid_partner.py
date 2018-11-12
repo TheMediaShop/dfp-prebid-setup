@@ -69,7 +69,7 @@ def setup_partner(user_email, advertiser_name, order_name, placements,
 
   # Create creatives.
   creative_configs = dfp.create_creatives.create_duplicate_creative_configs(
-      bidder_code, order_name, advertiser_id, num_creatives)
+      bidder_code, order_name, advertiser_id, settings.PREBID_CREATIVE_SNIPPET, num_creatives)
   creative_ids = dfp.create_creatives.create_creatives(creative_configs)
 
   # Get DFP key IDs for line item targeting.

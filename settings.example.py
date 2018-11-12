@@ -72,6 +72,9 @@ DFP_USE_EXISTING_ORDER_IF_EXISTS = False
 
 PREBID_BIDDER_CODE = None
 
+# Template used when creating the creatives for each ad unit size
+PREBID_CREATIVE_SNIPPET = './dfp/creative_snippet.html'
+
 # Price buckets. This should match your Prebid settings for the partner. See:
 # http://prebid.org/dev-docs/publisher-api-reference.html#module_pbjs.setPriceGranularity
 # FIXME: this should be an array of buckets. See:

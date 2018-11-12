@@ -2,9 +2,9 @@
 var w = window;
 for (i = 0; i < 10; i++) {
   w = w.parent;
-  if (w.tmspb) {
+  if (w.pbjs) {
     try {
-      w.tmspb.renderAd(document, '%%PATTERN:hb_adid%%');
+      w.pbjs.renderAd(document, '%%PATTERN:hb_adid%%');
       break;
     } catch (e) {
       continue;
