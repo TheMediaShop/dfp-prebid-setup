@@ -10,3 +10,5 @@ local_settings.py
 *.p12
 *.pem
 settings.py
+.idea/
+/*.json
