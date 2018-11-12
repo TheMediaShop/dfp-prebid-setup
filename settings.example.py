@@ -7,9 +7,13 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 #########################################################################
 
 # YAML File settings
-DFP_APPLICATION_NAME = 'INSERT_APPLICATION_NAME_HERE'
-DFP_NETWORK_CODE = 'INSERT_NETWORK_CODE_HERE'
-DFP_CREDENTIALS_JSON = './key.json'
+GOOGLEADS_YAML = {
+    'dfp': {
+        'application_name': 'INSERT_APPLICATION_NAME_HERE',
+        'network_code': 'INSERT_NETWORK_CODE_HERE',
+        'path_to_private_key_file': './key.json'
+    }
+}
 # End YAML File settings
 
 # A string describing the order
