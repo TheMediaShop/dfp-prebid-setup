@@ -70,6 +70,7 @@ DFP_USE_EXISTING_ORDER_IF_EXISTS = False
 # PREBID SETTINGS
 #########################################################################
 
+# The bidder code for hb_bidder criteria, set to None to disable and not use specific bidder criteria for the line items
 PREBID_BIDDER_CODE = None
 
 # Template used when creating the creatives for each ad unit size
@@ -84,6 +85,11 @@ PREBID_PRICE_BUCKETS = {
     'min': 0,
     'max': 20,
     'increment': 0.10,
+}
+
+# Extra criteria we want added to our line items (key: value pairs) (AND criteria only)
+PREBID_CRITERIA = {
+    #'hb_format': 'display'
 }
 
 #########################################################################
