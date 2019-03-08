@@ -35,6 +35,7 @@ def create_creative_config(name, advertiser_id, prebid_creative_snippet):
     Args:
       name (str): the name of the creative
       advertiser_id (int): the ID of the advertiser in DFP
+      prebid_creative_snippet (str): file path for creative
     Returns:
       an object: the line item config
     """
@@ -86,6 +87,7 @@ def create_duplicate_creative_configs(bidder_code, order_name, advertiser_id,
       order_name (int): the name of the order in DFP
       advertiser_id (int): the ID of the advertiser in DFP
       num_creatives (int): how many creative configs to generate
+      creative_template_id (int): template id to use for making native creatives, if None assumes "normal" adcreative_template_id=None
     Returns:
       an array: an array of length `num_creatives`, each item a line item config
     """
@@ -98,3 +100,25 @@ def create_duplicate_creative_configs(bidder_code, order_name, advertiser_id,
         )
         creative_configs.append(config)
     return creative_configs
+
+
+def create_native_creative_config(bidder_code, order_name, advertiser_id,
+                                  creative_template_id=None):
+    """
+    Returns config for native ad unit
+    :param bidder_code: the bidder code for the header bidding partner
+    :param order_name: the name of the order in DFP
+    :param advertiser_id: the ID of the advertiser in DFP
+    :param creative_template_id: template id to use for making native creative
+    :return:
+    """
+    return {
+        'xsi_type': 'TemplateCreative',
+        'name': '{bidder_code}: HB {order_name}'.format(bidder_code=bidder_code, order_name=order_name),
+        'advertiserId': advertiser_id,
+        'size': {'width': '1', 'height': '1', 'isAspectRatio': False},
+        'creativeTemplateId': creative_template_id,
+        'destinationUrl': 'http://themediashop.co',
+        'creativeTemplateVariableValues': [
+        ]
+    }

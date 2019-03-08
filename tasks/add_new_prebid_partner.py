@@ -48,7 +48,8 @@ logger = logging.getLogger(__name__)
 
 
 def setup_partner(user_email, advertiser_name, order_name, placements,
-                  sizes, bidder_code, prices, num_creatives, currency_code, hb_criteria_custom, hb_bidder=True):
+                  sizes, bidder_code, prices, num_creatives, currency_code, hb_criteria_custom, hb_bidder=True,
+                  creative_template_id=None):
     """
     Call all necessary DFP tasks for a new Prebid partner setup.
     """
@@ -65,11 +66,6 @@ def setup_partner(user_email, advertiser_name, order_name, placements,
 
     # Create the order.
     order_id = dfp.create_orders.create_order(order_name, advertiser_id, user_id)
-
-    # Create creatives.
-    creative_configs = dfp.create_creatives.create_duplicate_creative_configs(
-        bidder_code, order_name, advertiser_id, settings.PREBID_CREATIVE_SNIPPET, num_creatives)
-    creative_ids = dfp.create_creatives.create_creatives(creative_configs)
 
     # Define the criteria we want to pass to the line items when they are created
     hb_criteria = {}
@@ -89,17 +85,48 @@ def setup_partner(user_email, advertiser_name, order_name, placements,
     hb_pb_key_id = get_or_create_dfp_targeting_key('hb_pb')
     HBPBValueGetter = DFPValueIdGetter('hb_pb')
 
-    # Create line items.
+    # Create line item config(s).
+
+    logger.info("Creating line item config(s)...")
     line_items_config = create_line_item_configs(prices, order_id,
                                                  placement_ids, bidder_code, sizes, hb_pb_key_id,
-                                                 currency_code, hb_criteria, HBPBValueGetter)
+                                                 currency_code, hb_criteria, HBPBValueGetter,
+                                                 creative_template_id=creative_template_id)
 
     logger.info("Creating line items...")
     line_item_ids = dfp.create_line_items.create_line_items(line_items_config)
 
+    # Create creative(s).
+    if creative_template_id is not None:
+        logger.info("Building Native ad creative config...")
+        creative_config = dfp.create_creatives.create_native_creative_config(
+            bidder_code=bidder_code,
+            order_name=order_name,
+            advertiser_id=advertiser_id,
+            creative_template_id=creative_template_id
+        )
+
+        # No sizes since we are Native
+        sizes = None
+
+    else:
+        logger.info("Building creative config(s)...")
+        creative_config = dfp.create_creatives.create_duplicate_creative_configs(
+            bidder_code=bidder_code,
+            order_name=order_name,
+            advertiser_id=advertiser_id,
+            prebid_creative_snippet=settings.PREBID_CREATIVE_SNIPPET,
+            num_creatives=num_creatives)
+
+    logger.info("Creating creatives...")
+    creative_ids = dfp.create_creatives.create_creatives(creative_config)
+
     # Associate creatives with line items.
-    dfp.associate_line_items_and_creatives.make_licas(line_item_ids,
-                                                      creative_ids, size_overrides=sizes)
+    logger.info("Associating creative(s) and line item(s)...")
+    dfp.associate_line_items_and_creatives.make_licas(
+        line_item_ids=line_item_ids,
+        creative_ids=creative_ids,
+        sizes=sizes)
 
     logger.info("""
 
@@ -171,7 +198,7 @@ def get_or_create_dfp_targeting_key(name):
 
 def create_line_item_configs(prices, order_id, placement_ids, bidder_code,
                              sizes, hb_pb_key_id, currency_code, hb_criteria,
-                             HBPBValueGetter):
+                             HBPBValueGetter, creative_template_id):
     """
     Create a line item config for each price bucket.
 
@@ -185,6 +212,7 @@ def create_line_item_configs(prices, order_id, placement_ids, bidder_code,
       currency_code (str)
       hb_criteria (dict)
       HBPBValueGetter (DFPValueIdGetter)
+      creative_template_id
     Returns:
       an array of objects: the array of DFP line item configurations
     """
@@ -214,6 +242,7 @@ def create_line_item_configs(prices, order_id, placement_ids, bidder_code,
             sizes=sizes,
             hb_criteria=hb_criteria,
             currency_code=currency_code,
+            creative_template_id=creative_template_id,
         )
 
         line_items_config.append(config)
@@ -304,6 +333,8 @@ def main():
                                   'must contain at least one size object.')
 
     currency_code = getattr(settings, 'DFP_CURRENCY_CODE', 'USD')
+    if currency_code is None:
+        raise MissingSettingException('DFP_CURRENCY_CODE')
 
     # How many creatives to attach to each line item. We need at least one
     # creative per ad unit on a page. See:
@@ -333,14 +364,19 @@ def main():
     prices_summary = get_prices_summary_string(prices,
                                                price_buckets['precision'])
 
+    # Are we native?
+    creative_template_id = settings.PREBID_NATIVE_FORMAT_ID if settings.PREBID_NATIVE else None
+
     logger.info(
         u"""
     
         Going to create {name_start_format}{num_line_items}{format_end} new line items.
           {name_start_format}Order{format_end}: {value_start_format}{order_name}{format_end}
           {name_start_format}Advertiser{format_end}: {value_start_format}{advertiser}{format_end}
+          {name_start_format}Native Ad Units?{format_end}: {value_start_format}{native}{format_end}
     
         Line items will have targeting:
+          {name_start_format}Currency{format_end} = {value_start_format}{currency_code}{format_end}
           {name_start_format}hb_pb{format_end} = {value_start_format}{prices_summary}{format_end}
           {name_start_format}hb_bidder{format_end} = {value_start_format}{bidder_code}{format_end}
           {name_start_format}placements{format_end} = {value_start_format}{placements}{format_end}
@@ -354,6 +390,8 @@ def main():
             bidder_code=bidder_code,
             placements=placements,
             sizes=sizes,
+            native=creative_template_id is not None,
+            currency_code=currency_code,
             name_start_format=color.BOLD,
             format_end=color.END,
             value_start_format=color.BLUE,
@@ -376,7 +414,8 @@ def main():
         num_creatives,
         currency_code,
         hb_criteria,
-        hb_bidder
+        hb_bidder,
+        creative_template_id=creative_template_id
     )
 
 

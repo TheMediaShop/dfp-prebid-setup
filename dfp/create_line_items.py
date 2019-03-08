@@ -25,7 +25,7 @@ def create_line_items(line_items):
 
 def create_line_item_config(name, order_id, placement_ids, cpm_micro_amount,
                             sizes, hb_criteria,
-                            currency_code='USD'):
+                            currency_code, creative_template_id):
     """
     Creates a line item config object.
 
@@ -39,19 +39,32 @@ def create_line_item_config(name, order_id, placement_ids, cpm_micro_amount,
         keys, to set the creative sizes this line item will serve
       hb_criteria (dict): An dict of key: value pairs for criteria for this line item
       currency_code (str): the currency code (e.g. 'USD' or 'EUR')
+      creative_template_id (int): if not None then we are doing native ads
     Returns:
       an object: the line item config
     """
 
-    # Set up sizes.
-    creative_placeholders = []
+    # Native ad unit
+    if creative_template_id is not None:
+        creative_placeholders = {
+            'size': {
+                'width': '1',
+                'height': '1'
+            },
+            'creativeTemplateId': creative_template_id,
+            'creativeSizeType': 'NATIVE'
+        }
+    else:
 
-    for size in sizes:
-        creative_placeholders.append({
-            'size': size
-        })
+        # Set up sizes.
+        creative_placeholders = []
 
-    # Setup criteria
+        for size in sizes:
+            creative_placeholders.append({
+                'size': size
+            })
+
+    # Setup bidder criteria
     bidder_criteria = []
 
     # Create key/value targeting for Prebid.

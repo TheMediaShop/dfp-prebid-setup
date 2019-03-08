@@ -61,10 +61,8 @@ DFP_USE_EXISTING_ORDER_IF_EXISTS = False
 # This will default to the number of placements specified in
 # `DFP_TARGETED_PLACEMENT_NAMES`.
 # DFP_NUM_CREATIVES_PER_LINE_ITEM = 2
-
-# Optional
-# The currency to use in DFP when setting line item CPMs. Defaults to 'USD'.
-# DFP_CURRENCY_CODE = 'USD'
+# The currency to use in DFP when setting line item CPMs.
+DFP_CURRENCY_CODE = 'USD'
 
 #########################################################################
 # PREBID SETTINGS
@@ -75,6 +73,12 @@ PREBID_BIDDER_CODE = None
 
 # Template used when creating the creatives for each ad unit size
 PREBID_CREATIVE_SNIPPET = './dfp/creative_snippet.html'
+
+# Set to True to set these up as a native.  If True you MUST define the PREBID_NATIVE_FORMAT_ID below
+PREBID_NATIVE = False
+
+# This is the ID from the "Native Formats" section of the Native Ads in DFP.
+PREBID_NATIVE_FORMAT_ID = 0
 
 # Price buckets. This should match your Prebid settings for the partner. See:
 # http://prebid.org/dev-docs/publisher-api-reference.html#module_pbjs.setPriceGranularity
@@ -89,7 +93,7 @@ PREBID_PRICE_BUCKETS = {
 
 # Extra criteria we want added to our line items (key: value pairs) (AND criteria only)
 PREBID_CRITERIA = {
-    #'hb_format': 'display'
+    #'hb_format': 'banner'
 }
 
 #########################################################################
