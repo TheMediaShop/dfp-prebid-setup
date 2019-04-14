@@ -1,4 +1,4 @@
-from googleads import dfp
+from googleads import ad_manager
 import yaml
 
 import settings
@@ -6,4 +6,4 @@ import settings
 
 def get_client():
     # Build the Yaml file from scratch so we can move the settings into the application level
-    return dfp.DfpClient.LoadFromString(yaml.dump(settings.GOOGLEADS_YAML))
+    return ad_manager.AdManagerClient.LoadFromString(yaml.dump(settings.GOOGLEADS_YAML))

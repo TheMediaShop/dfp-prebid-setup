@@ -8,7 +8,7 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # YAML File settings
 GOOGLEADS_YAML = {
-    'dfp': {
+    'ad_manager': {
         'application_name': 'INSERT_APPLICATION_NAME_HERE',
         'network_code': 'INSERT_NETWORK_CODE_HERE',
         'path_to_private_key_file': './key.json'
@@ -28,6 +28,9 @@ DFP_ADVERTISER_NAME = None
 
 # Names of placements the line items should target.
 DFP_TARGETED_PLACEMENT_NAMES = []
+
+# Names of ad units the line items should target.
+DFP_TARGETED_AD_UNIT_NAMES = []
 
 # Sizes of placements. These are used to set line item and creative sizes.
 DFP_PLACEMENT_SIZES = [
@@ -61,6 +64,7 @@ DFP_USE_EXISTING_ORDER_IF_EXISTS = False
 # This will default to the number of placements specified in
 # `DFP_TARGETED_PLACEMENT_NAMES`.
 # DFP_NUM_CREATIVES_PER_LINE_ITEM = 2
+
 # The currency to use in DFP when setting line item CPMs.
 DFP_CURRENCY_CODE = 'USD'
 

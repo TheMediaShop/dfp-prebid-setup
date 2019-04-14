@@ -11,13 +11,13 @@ def create_creatives(creatives):
     Creates creatives in DFP.
 
     Args:
-      creatives (arr): an array of objects, each a creative configuration
+        creatives (arr): an array of objects, each a creative configuration
     Returns:
-      an array: an array of created creative IDs
+        an array: an array of created creative IDs
     """
     dfp_client = get_client()
     creative_service = dfp_client.GetService('CreativeService',
-                                             version='v201802')
+                                             version='v201811')
     creatives = creative_service.createCreatives(creatives)
 
     # Return IDs of created line items.
@@ -44,7 +44,7 @@ def create_creative_config(name, advertiser_id, prebid_creative_snippet):
     with open(snippet_file_path, 'r') as snippet_file:
         snippet = snippet_file.read()
 
-    # https://developers.google.com/doubleclick-publishers/docs/reference/v201802/CreativeService.Creative
+    # https://developers.google.com/doubleclick-publishers/docs/reference/v201811/CreativeService.Creative
     config = {
         'xsi_type': 'ThirdPartyCreative',
         'name': name,

@@ -1,4 +1,4 @@
-from googleads import dfp
+from googleads import ad_manager
 
 from dfp.client import get_client
 
@@ -8,12 +8,12 @@ def create_line_items(line_items):
     Creates line items in DFP.
 
     Args:
-      line_items (arr): an array of objects, each a line item configuration
+    line_items (arr): an array of objects, each a line item configuration
     Returns:
-      an array: an array of created line item IDs
+    an array: an array of created line item IDs
     """
     dfp_client = get_client()
-    line_item_service = dfp_client.GetService('LineItemService', version='v201802')
+    line_item_service = dfp_client.GetService('LineItemService', version='v201811')
     line_items = line_item_service.createLineItems(line_items)
 
     # Return IDs of created line items.
@@ -68,7 +68,7 @@ def create_line_item_config(name, order_id, placement_ids, cpm_micro_amount,
     bidder_criteria = []
 
     # Create key/value targeting for Prebid.
-    # https://github.com/googleads/googleads-python-lib/blob/master/examples/dfp/v201802/line_item_service/target_custom_criteria.py
+    # https://github.com/googleads/googleads-python-lib/blob/master/examples/dfp/v201811/line_item_service/target_custom_criteria.py
     # create custom criterias
     for criteria_key, criteria_value in hb_criteria.iteritems():
         bidder_criteria.append({
@@ -78,11 +78,11 @@ def create_line_item_config(name, order_id, placement_ids, cpm_micro_amount,
             'operator': 'IS'
         })
 
-    # https://developers.google.com/doubleclick-publishers/docs/reference/v201802/LineItemService.LineItem
+    # https://developers.google.com/doubleclick-publishers/docs/reference/v201811/LineItemService.LineItem
     line_item_config = {
         'name': name,
         'orderId': order_id,
-        # https://developers.google.com/doubleclick-publishers/docs/reference/v201802/LineItemService.Targeting
+        # https://developers.google.com/doubleclick-publishers/docs/reference/v201811/LineItemService.Targeting
         'targeting': {
             'inventoryTargeting': {
                 'targetedPlacementIds': placement_ids

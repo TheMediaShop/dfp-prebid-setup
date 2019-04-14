@@ -1,10 +1,8 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import logging
 import os
 import sys
 from builtins import input
+from pprint import pprint
 
 from colorama import init
 
@@ -14,6 +12,7 @@ import dfp.create_custom_targeting
 import dfp.create_creatives
 import dfp.create_line_items
 import dfp.create_orders
+import dfp.get_ad_units
 import dfp.get_advertisers
 import dfp.get_custom_targeting
 import dfp.get_placements
