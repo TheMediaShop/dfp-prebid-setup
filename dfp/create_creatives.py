@@ -1,3 +1,4 @@
+
 import logging
 import os, sys
 
@@ -54,12 +55,10 @@ def create_creative_config(name, advertiser_id, prebid_creative_snippet):
             'height': '1'
         },
         'snippet': snippet,
-        # https://github.com/prebid/Prebid.js/issues/418
-        'isSafeFrameCompatible': False,
+        'isSafeFrameCompatible': True,
     }
 
     return config
-
 
 def build_creative_name(bidder_code, order_name, creative_num):
     """
