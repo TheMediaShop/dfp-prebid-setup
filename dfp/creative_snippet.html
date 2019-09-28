@@ -1,16 +1,11 @@
-<script src="https://cdn.jsdelivr.net/npm/prebid-universal-creative@latest/dist/creative.js"></script>
+<script src = "https://cdn.jsdelivr.net/npm/prebid-universal-creative@latest/dist/creative.js"></script>
 <script>
     var ucTagData = {};
     ucTagData.adServerDomain = "";
-    ucTagData.pubUrl = "%%MACRO:url%%";
-    ucTagData.adId = "%%MACRO:hb_adid%%";
-    ucTagData.cacheHost = "%%MACRO:hb_cache_host%%";
-    ucTagData.cachePath = "%%MACRO:hb_cache_path%%";
-    ucTagData.uuid = "%%MACRO:hb_cache_id%%";
-    ucTagData.mediaType = "%%MACRO:hb_format%%";
-    ucTagData.env = "%%MACRO:hb_env%%";
-    ucTagData.size = "%%MACRO:hb_size%%";
-    ucTagData.hbPb = "%%MACRO:hb_pb%%";
+    ucTagData.pubUrl = "%%PATTERN:url%%";
+    ucTagData.targetingMap = %%PATTERN:TARGETINGMAP%%;
+    ucTagData.hbPb = "%%PATTERN:hb_pb%%";
+
     try {
         ucTag.renderAd(document, ucTagData);
     } catch (e) {

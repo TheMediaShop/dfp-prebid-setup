@@ -46,7 +46,7 @@ else:
 logger = logging.getLogger(__name__)
 
 
-def setup_partner(user_email, advertiser_name, order_name, placements,
+def setup_partner(user_email, advertiser_name, order_name, placements, ad_units,
                   sizes, bidder_code, prices, num_creatives, currency_code, hb_criteria_custom, hb_bidder=True,
                   creative_template_id=None):
     """
@@ -59,6 +59,9 @@ def setup_partner(user_email, advertiser_name, order_name, placements,
     # Get the placement IDs.
     placement_ids = dfp.get_placements.get_placement_ids_by_name(placements)
 
+    # Get the ad unit IDs.
+    ad_unit_ids = dfp.get_ad_units.get_ad_unit_ids_by_name(ad_units)
+
     # Get (or potentially create) the advertiser.
     advertiser_id = dfp.get_advertisers.get_advertiser_id_by_name(
         advertiser_name)
@@ -70,7 +73,7 @@ def setup_partner(user_email, advertiser_name, order_name, placements,
     hb_criteria = {}
 
     # Do custom hb_criteria
-    for criteria_key, criteria_value in hb_criteria_custom.iteritems():
+    for criteria_key, criteria_value in hb_criteria_custom.items():
         key_id = get_or_create_dfp_targeting_key(criteria_key)
         hb_criteria[key_id] = DFPValueIdGetter(criteria_key).get_value_id(criteria_value)
 
@@ -88,7 +91,7 @@ def setup_partner(user_email, advertiser_name, order_name, placements,
 
     logger.info("Creating line item config(s)...")
     line_items_config = create_line_item_configs(prices, order_id,
-                                                 placement_ids, bidder_code, sizes, hb_pb_key_id,
+                                                 placement_ids, ad_unit_ids, bidder_code, sizes, hb_pb_key_id,
                                                  currency_code, hb_criteria, HBPBValueGetter,
                                                  creative_template_id=creative_template_id)
 
@@ -195,7 +198,7 @@ def get_or_create_dfp_targeting_key(name):
     return key_id
 
 
-def create_line_item_configs(prices, order_id, placement_ids, bidder_code,
+def create_line_item_configs(prices, order_id, placement_ids, ad_unit_ids, bidder_code,
                              sizes, hb_pb_key_id, currency_code, hb_criteria,
                              HBPBValueGetter, creative_template_id):
     """
@@ -205,6 +208,7 @@ def create_line_item_configs(prices, order_id, placement_ids, bidder_code,
       prices (array)
       order_id (int)
       placement_ids (arr)
+      ad_unit_ids (arr)
       bidder_code (str)
       hb_bidder_key_id (int)
       hb_pb_key_id (int)
@@ -237,6 +241,7 @@ def create_line_item_configs(prices, order_id, placement_ids, bidder_code,
             name=line_item_name,
             order_id=order_id,
             placement_ids=placement_ids,
+            ad_unit_ids=ad_unit_ids,
             cpm_micro_amount=price,
             sizes=sizes,
             hb_criteria=hb_criteria,
@@ -324,6 +329,8 @@ def main():
         raise BadSettingException('The setting "DFP_TARGETED_PLACEMENT_NAMES" '
                                   'must contain at least one DFP placement ID.')
 
+    ad_units = getattr(settings, 'DFP_TARGETED_AD_UNIT_NAMES', None)
+
     sizes = getattr(settings, 'DFP_PLACEMENT_SIZES', None)
     if sizes is None:
         raise MissingSettingException('DFP_PLACEMENT_SIZES')
@@ -379,6 +386,7 @@ def main():
           {name_start_format}hb_pb{format_end} = {value_start_format}{prices_summary}{format_end}
           {name_start_format}hb_bidder{format_end} = {value_start_format}{bidder_code}{format_end}
           {name_start_format}placements{format_end} = {value_start_format}{placements}{format_end}
+          {name_start_format}ad units{format_end} = {value_start_format}{ad_units}{format_end}
     
         """.format(
             num_line_items=len(prices),
@@ -388,6 +396,7 @@ def main():
             prices_summary=prices_summary,
             bidder_code=bidder_code,
             placements=placements,
+            ad_units=ad_units,
             sizes=sizes,
             native=creative_template_id is not None,
             currency_code=currency_code,
@@ -407,6 +416,7 @@ def main():
         advertiser_name,
         order_name,
         placements,
+        ad_units,
         sizes,
         bidder_code,
         prices,

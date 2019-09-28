@@ -13,7 +13,7 @@ def create_line_items(line_items):
     an array: an array of created line item IDs
     """
     dfp_client = get_client()
-    line_item_service = dfp_client.GetService('LineItemService', version='v201811')
+    line_item_service = dfp_client.GetService('LineItemService', version='v201908')
     line_items = line_item_service.createLineItems(line_items)
 
     # Return IDs of created line items.
@@ -23,7 +23,7 @@ def create_line_items(line_items):
     return created_line_item_ids
 
 
-def create_line_item_config(name, order_id, placement_ids, cpm_micro_amount,
+def create_line_item_config(name, order_id, placement_ids, ad_unit_ids, cpm_micro_amount,
                             sizes, hb_criteria,
                             currency_code, creative_template_id):
     """
@@ -33,6 +33,7 @@ def create_line_item_config(name, order_id, placement_ids, cpm_micro_amount,
       name (str): the name of the line item
       order_id (int): the ID of the order in DFP
       placement_ids (arr): an array of DFP placement IDs to target
+      ad_unit_ids (arr): an array of DFP ad unit IDs to target
       cpm_micro_amount (int): the currency value (in micro amounts) of the
         line item
       sizes (arr): an array of objects, each containing 'width' and 'height'
@@ -68,9 +69,9 @@ def create_line_item_config(name, order_id, placement_ids, cpm_micro_amount,
     bidder_criteria = []
 
     # Create key/value targeting for Prebid.
-    # https://github.com/googleads/googleads-python-lib/blob/master/examples/dfp/v201811/line_item_service/target_custom_criteria.py
+    # https://github.com/googleads/googleads-python-lib/blob/master/examples/dfp/v201908/line_item_service/target_custom_criteria.py
     # create custom criterias
-    for criteria_key, criteria_value in hb_criteria.iteritems():
+    for criteria_key, criteria_value in hb_criteria.items():
         bidder_criteria.append({
             'xsi_type': 'CustomCriteria',
             'keyId': criteria_key,
@@ -78,11 +79,11 @@ def create_line_item_config(name, order_id, placement_ids, cpm_micro_amount,
             'operator': 'IS'
         })
 
-    # https://developers.google.com/doubleclick-publishers/docs/reference/v201811/LineItemService.LineItem
+    # https://developers.google.com/doubleclick-publishers/docs/reference/v201908/LineItemService.LineItem
     line_item_config = {
         'name': name,
         'orderId': order_id,
-        # https://developers.google.com/doubleclick-publishers/docs/reference/v201811/LineItemService.Targeting
+        # https://developers.google.com/doubleclick-publishers/docs/reference/v201908/LineItemService.Targeting
         'targeting': {
             'inventoryTargeting': {
                 'targetedPlacementIds': placement_ids
@@ -107,4 +108,8 @@ def create_line_item_config(name, order_id, placement_ids, cpm_micro_amount,
         },
         'creativePlaceholders': creative_placeholders,
     }
+
+    if ad_unit_ids is not None:
+        line_item_config['targeting']['inventoryTargeting']['targetedAdUnits'] = [{'adUnitId': id} for id in ad_unit_ids]
+
     return line_item_config
