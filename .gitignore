@@ -12,3 +12,4 @@ settings.py
 .idea/
 /*.json
 dfp_python2_examples*
+venv
