@@ -105,7 +105,8 @@ def setup_partner(user_email, advertiser_name, order_name, placements, ad_units,
             bidder_code=bidder_code,
             order_name=order_name,
             advertiser_id=advertiser_id,
-            creative_template_id=creative_template_id
+            creative_template_id=creative_template_id,
+            num_creatives=num_creatives
         )
 
         # No sizes since we are Native

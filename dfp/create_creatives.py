@@ -1,4 +1,3 @@
-
 import logging
 import os, sys
 
@@ -60,6 +59,7 @@ def create_creative_config(name, advertiser_id, prebid_creative_snippet):
 
     return config
 
+
 def build_creative_name(bidder_code, order_name, creative_num):
     """
     Returns a name for a creative.
@@ -102,22 +102,27 @@ def create_duplicate_creative_configs(bidder_code, order_name, advertiser_id,
 
 
 def create_native_creative_config(bidder_code, order_name, advertiser_id,
-                                  creative_template_id=None):
+                                  creative_template_id=None, num_creatives=1):
     """
-    Returns config for native ad unit
-    :param bidder_code: the bidder code for the header bidding partner
-    :param order_name: the name of the order in DFP
-    :param advertiser_id: the ID of the advertiser in DFP
-    :param creative_template_id: template id to use for making native creative
+    :param bidder_code:
+    :param order_name:
+    :param advertiser_id:
+    :param creative_template_id:
+    :param num_creatives:
     :return:
     """
-    return {
-        'xsi_type': 'TemplateCreative',
-        'name': '{bidder_code}: HB {order_name}'.format(bidder_code=bidder_code, order_name=order_name),
-        'advertiserId': advertiser_id,
-        'size': {'width': '1', 'height': '1', 'isAspectRatio': False},
-        'creativeTemplateId': creative_template_id,
-        'destinationUrl': 'http://themediashop.co',
-        'creativeTemplateVariableValues': [
-        ]
-    }
+
+    creative_configs = []
+    for creative_num in range(1, num_creatives + 1):
+        config = {
+            'xsi_type': 'TemplateCreative',
+            'name': build_creative_name(bidder_code, order_name, creative_num),
+            'advertiserId': advertiser_id,
+            'size': {'width': '1', 'height': '1', 'isAspectRatio': False},
+            'creativeTemplateId': creative_template_id,
+            'destinationUrl': 'http://themediashop.co',
+            'creativeTemplateVariableValues': [
+            ]
+        }
+        creative_configs.append(config)
+    return creative_configs
